@@ -17,9 +17,9 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run unit tests
         run: python -m pytest -q
-      - name: Download SEC company facts
+      - name: Acquire pinned SEC filing snapshot
         env:
-          SEC_USER_AGENT: DA-08-portfolio-analytics github-actions@example.com
+          SEC_DATA_MODE: pinned
         run: python -m src.download_data
       - name: Normalize fiscal-year facts
         run: python -m src.normalize_sec
