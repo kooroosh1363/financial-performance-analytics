@@ -1,0 +1,34 @@
+name: Financial Analytics CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  financial-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run unit tests
+        run: python -m pytest -q
+      - name: Download SEC company facts
+        env:
+          SEC_USER_AGENT: DA-08-portfolio-analytics github-actions@example.com
+        run: python -m src.download_data
+      - name: Normalize fiscal-year facts
+        run: python -m src.normalize_sec
+      - name: Execute financial analytics
+        run: python -m src.run_analysis
+      - name: Validate deliverables
+        run: |
+          test -s data/processed/annual_financials.csv
+          test -s data/processed/concept_provenance.csv
+          test -s outputs/financial_kpis_by_year.csv
+          test -s outputs/latest_year_variance.csv
+          test -s outputs/executive_summary.csv
